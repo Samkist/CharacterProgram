@@ -6,6 +6,6 @@ package me.Samkist.Character;
 
 public class CharacterGUI {
     public static void main(String[] args) {
-        new Parser("");
+        new Parser("    Hello hello my name is      ....      Sam      .");
     }
 }

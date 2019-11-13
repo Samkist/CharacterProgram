@@ -1,4 +1,4 @@
-package me.Samkist.Character;
+package me.Samkist.Character.SamUtil;
 
 import java.util.AbstractList;
 import java.util.Arrays;
@@ -79,6 +79,23 @@ public class SamArray<E> extends AbstractList<E> implements List<E>, RandomAcces
     private void expandArray() {
         int newSize = elementData.length * 2;
         elementData = Arrays.copyOf(elementData, newSize);
+    }
+
+    public int indexOf(Object o) {
+        if (o == null) {
+            for (int i = 0; i < size; i++)
+                if (elementData[i]==null)
+                    return i;
+        } else {
+            for (int i = 0; i < size; i++)
+                if (o.equals(elementData[i]))
+                    return i;
+        }
+        return -1;
+    }
+
+    public boolean contains(Object o) {
+        return indexOf(o) >= 0;
     }
 
     @SuppressWarnings("unchecked")

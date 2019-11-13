@@ -4,39 +4,65 @@
  */
 package me.Samkist.Character;
 
-import java.util.ArrayList;
+import me.Samkist.Character.SamUtil.SamArray;
+import me.Samkist.Character.SamUtil.SamKV;
 
-public class Parser {
-    String[] splitString;
-    String rawString;
+class Parser {
 
-    public Parser(String rawString) {
-        this.rawString = rawString;
-        splitString = splitString("Hello my", " ");
-        for(int i = 0; i < splitString.length; i++) {
-            System.out.println(splitString[i]);
+    Parser(String rawString) {
+        rawString = rawString.replace("\t", "").trim().replaceAll("^ +| +$|( )+", " ");
+        if(Character.toString(rawString.charAt(rawString.length()-1)).matches("\\p{Punct}"))
+            rawString = rawString.substring(0, rawString.length()-1);
+        String[] splitStringLowercase = splitString(rawString.toLowerCase(), " ");
+        Words words = getWords(splitStringLowercase);
+        SamArray<SamKV<String, Integer>> occurrences = getOccurrences(words, splitStringLowercase);
+        for(SamKV<String, Integer> occ : occurrences) {
+            System.out.println(occ.getKey() + " : " + occ.getValue());
         }
+    }
+
+    private SamArray<SamKV<String, Integer>> getOccurrences(Words w, String[] s) {
+        SamArray<SamKV<String, Integer>> occ = new SamArray<>();
+        for(String sw : w.getWordsArray()) {
+            occ.add(new SamKV<>(sw, 0));
+        }
+
+        for(SamKV<String, Integer> o : occ) {
+            for(String string : s) {
+                if(string.equalsIgnoreCase(o.getKey()))
+                    o.setValue(o.getValue() +1);
+            }
+        }
+        return occ;
     }
 
     private String[] splitString(String s, String delimiter) {
         SamArray<String> arrList = new SamArray<>();
         for(int i = 0; i < s.length(); i++) {
-            StringBuilder builder = new StringBuilder("");
-            while(i < s.length()) {
-                if(("" + s.charAt(i)).equals(delimiter))
-                    continue;
-                System.out.println("Appending " + s.charAt(i));
-                builder.append("" + s.charAt(i));
+            StringBuilder builder = new StringBuilder();
+            while(i < s.length() && !(Character.toString(s.charAt(i))).equals(delimiter)) {
+                builder.append(s.charAt(i));
                 i++;
             }
-            if(s.toString().length() > 0)
-                arrList.add(s.toString());
+            arrList.add(builder.toString());
         }
         String[] arr = new String[arrList.size()];
         for(int i = 0; i < arr.length; i++) {
-            System.out.println("Adding " + arrList.get(i));
             arr[i] = arrList.get(i);
         }
         return arr;
+    }
+
+    private Words getWords(String[] ss) {
+        SamArray<String> arrList = new SamArray<>();
+        for (String s : ss) {
+            if (!arrList.contains(s))
+                arrList.add(s);
+        }
+        String[] arr = new String[arrList.size()];
+        for(int i = 0; i < arr.length; i++) {
+            arr[i] = arrList.get(i);
+        }
+        return new Words(arr, arrList);
     }
 }
